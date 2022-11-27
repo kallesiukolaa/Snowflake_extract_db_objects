@@ -1,3 +1,8 @@
+import shutil
+import os
+import unicodedata
+import re
+
 
 #Returns a list of all occurences of given char in the given string.
 def get_char_positions_from_string(char, string):
@@ -88,18 +93,47 @@ def derive_object_name(obj_str):
         name = obj_str[:index]
     return [schema_name, name]
 
+def slugify(value, allow_unicode=False):
+    """
+    Taken from https://github.com/django/django/blob/master/django/utils/text.py
+    Convert to ASCII if 'allow_unicode' is False. Convert spaces or repeated
+    dashes to single dashes. Remove characters that aren't alphanumerics,
+    underscores, or hyphens. Convert to lowercase. Also strip leading and
+    trailing whitespace, dashes, and underscores.
+    """
+    value = str(value)
+    if allow_unicode:
+        value = unicodedata.normalize('NFKC', value)
+    else:
+        value = unicodedata.normalize('NFKD', value).encode('ascii', 'ignore').decode('ascii')
+    value = re.sub(r'[^\w\s-]', '', value.lower())
+    return re.sub(r'[-\s]+', '-', value).strip('-_')
+
 with open('mydb.sql', 'r') as file:
     data = file.read()
-folder = "C:\Temp\Objects"
+location = "C:\Temp\\"
+dir = "Objects"
 
-print(get_char_positions_from_string(';', data))
-print(find_real_semicols(data))
-for str in split_string_positions(data, find_real_semicols(data)):
-    print("---Definition ---")
-    print(str.strip()) 
-    print("---Type ---")
-    print(derive_object_type(str))
-    print("---Schema ---")
-    print(derive_object_name(str)[0])
-    print("---Name ---")
-    print(derive_object_name(str)[1])
+path = os.path.join(location, dir)
+shutil.rmtree(path, ignore_errors = True)
+os.mkdir(path)
+
+database = "mytestdb"
+path = os.path.join(path, database)
+os.mkdir(path)
+
+for obj in split_string_positions(data, find_real_semicols(data)):
+    type = derive_object_type(obj)
+    schema_name = derive_object_name(obj)
+    schema = schema_name[0]
+    name = schema_name[1]
+    sub_path = os.path.join(path, type)
+    try:
+        os.mkdir(sub_path)
+    except OSError as error:
+        print(error)
+    file_name = slugify(schema + '_' + name) + '.sql'
+    sql_file = open(os.path.join(sub_path, file_name), "w")
+    sql_file.write(obj)
+    sql_file.close()
+    print(file_name)
