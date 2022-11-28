@@ -60,8 +60,8 @@ def remove_from_list(list, sublist):
         except ValueError:
             1==1
     return list
-#Removes quotas that are inside duoble quota and vice versa
 
+#Removes quotas that are inside duoble quota and vice versa
 def remove_chars_inside(chars_1, chars_2):
     open_1 = False #Example if we have dfdsfssdfsdf'dfsffd.. its open for '
     open_2 = False
