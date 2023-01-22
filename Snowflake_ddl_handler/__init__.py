@@ -181,5 +181,5 @@ def generate_sql_for_ddl(databases):
     if len(databases) == 0:
         raise ValueError("Database list cannot be empty")
     for database in databases:
-        sql = sql + "select get_ddl('database', '" + database + "', true)\nunion"
-    return sql[-5] + ";"
+        sql = sql + "select '" + database + "' as database, get_ddl('database', '" + database + "', true) as ddl\nunion\n"
+    return sql[-6] + ";"
