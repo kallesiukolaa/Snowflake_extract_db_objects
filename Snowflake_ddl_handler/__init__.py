@@ -156,6 +156,9 @@ def __derive_object_name(obj_str):
         else:
             index = index_space
         name = obj_str[:index]
+    obj_str = __remove_from_start(obj_str, '.' + name)
+    if obj_type == 'PROCEDURE' or obj_type == 'FUNCTION':
+        name = name + obj_str[:obj_str.find(')') + 1].replace(',', '').replace(' ' , '_')
     pair = []
     if schema_name == '':
         return ['', database_name]
