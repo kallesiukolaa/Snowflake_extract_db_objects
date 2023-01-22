@@ -175,7 +175,7 @@ def snowflake_ddl_to_list(database_ddl):
         return_list.append((__derive_object_type(obj), entire_object[0], entire_object[1], obj))
     return return_list
 
-"""Creates sql query for retrieving snowflake ddls from all databases."""
+"""Creates sql query for retrieving snowflake ddls from all databases. Please note that if needed, you need to use double quotas with database names."""
 def generate_sql_for_ddl(databases):
     sql = ""
     if len(databases) == 0:
